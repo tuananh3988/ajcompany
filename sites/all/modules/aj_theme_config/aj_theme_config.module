@@ -1,0 +1,83 @@
+<?php
+
+/**
+ * Implements hook_block_info().
+ *
+ * This hook declares what blocks are provided by the module.
+ */
+function aj_theme_config_block_info() {
+  $blocks['header_page'] = array(
+    'info' => t('Header page'),
+    'status' => TRUE,
+    //'region' => 'user_first',  // Not usually provided.
+    //'visibility' => BLOCK_VISIBILITY_LISTED,  // Not usually provided.
+    //'pages' => 'node/*', // Not usually provided here.
+  );
+
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ *
+ * This hook generates the contents of the blocks themselves.
+ */
+function aj_theme_config_block_view($delta = '') {
+  //The $delta parameter tells us which block is being requested.
+  switch ($delta) {
+    case 'header_page':
+      //$block['subject'] = t('Title of second block (example_empty)');
+      $block['content'] = aj_theme_config_contents($delta);
+      break;
+  }
+  return $block;
+}
+
+/**
+ * A module-defined block content function.
+ */
+function aj_theme_config_contents($which_block) {
+  switch ($which_block) {
+    case 'header_page':
+      return array('#markup' => '<div class="header_page">' . header_page() . '</div>');
+    
+  }
+}
+
+function header_page() {
+  GLOBAL $base_path;
+  $block = module_invoke('search', 'block_view', 'search');
+  $html = '';
+  $html .= '<div class="wrap-header-left">';
+  $html .= '  <div class="wrap-header-left clearfix">';
+  $html .= '    <div class="logo-img">
+                  <a href="/" rel="home" title="" class="active"><img src="' . $base_path .  path_to_theme() . '/logo.png" alt="" id="logo" ></a>      
+                </div>
+                <div class="header-mid">
+                  <img src="' . $base_path .  path_to_theme() . '/img/header-mid.png" alt="" id="logo" >
+                </div>
+                <div class="clearfix"></div>
+                <div class="wrap-search-menu-block">
+                  <div class="">
+                    <div class="menu-aj"></div>
+                    <div class="wrap-search-block">
+                    <p class="label-search">Tìm Kiếm</p>
+                    ' . render($block) . 
+                    
+                  ' </div>
+                  </div>
+                </div>
+              </div>
+            </div>';
+  $html .= '<div class="wrap-header-right">';
+  $html .= '  <a class="link-km" href="/khuyen-mai">khuyen mai</a>';
+  $html .= '</div>';
+  return $html;
+}
+
+function aj_theme_config_form_alter(&$form, &$form_state, $form_id) {
+  if ($form_id == 'search_block_form') {
+       // Alternative (HTML5) placeholder attribute instead of using the javascript
+    $form['search_block_form']['#attributes']['placeholder'] = t('Nhập từ khóa...');
+  }
+}
